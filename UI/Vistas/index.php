@@ -5,5 +5,5 @@
  * Date: 2/10/2016
  * Time: 2:59 PM
  */
-
-echo "just a little change34";
+require_once("../../Datos/initialize.php");
+echo "hello world";
