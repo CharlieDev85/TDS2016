@@ -22,7 +22,7 @@ defined('LIB_LOGIC') ? null : define('LIB_LOGIC', SITE_ROOT.DS.'Logica');
 require_once(LIB_PATH.DS.'config.php');
 
 // load basic functions next so that everything after can use them
-//require_once(LIB_PATH.DS.'functions.php');
+require_once(LIB_PATH.DS.'functions.php');
 
 // load core objects
 //require_once(LIB_PATH.DS.'session.php');

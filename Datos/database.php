@@ -47,6 +47,20 @@ class MySQLDatabase{
         }
     }
 
+    //checks if Locations has info
+    public function locations_table_is_empty(){
+        //Location Table is empty
+    }
+
+    public function fill_locations_table(){
+        if($this->locations_table_is_empty()){
+            //fill it with cvs file
+            //return true
+        } else {
+            return false;
+        }
+    }
+
     public function escape_value($string) {
         $escaped_string = mysqli_real_escape_string($this->connection, $string);
         return $escaped_string;
@@ -74,3 +88,6 @@ class MySQLDatabase{
         return mysqli_affected_rows($this->connection);
     }
 }
+
+$database = new MySQLDatabase();
+$db = $database;
