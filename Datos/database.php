@@ -35,7 +35,7 @@ class MySQLDatabase{
     }
 
     public function query($sql) {
-        //echo $sql;
+//        echo '<br><br>' . $sql . '<br><br>';
         $result = mysqli_query($this->connection, $sql);
         $this->confirm_query($result);
         return $result;
@@ -49,16 +49,30 @@ class MySQLDatabase{
 
     //checks if Locations has info
     public function locations_table_is_empty(){
-        //Location Table is empty
-    }
-
-    public function fill_locations_table(){
-        if($this->locations_table_is_empty()){
-            //fill it with cvs file
-            //return true
+        $locations_result = $this->query("SELECT * FROM locations");
+        $num_of_rows = $this->num_rows($locations_result);
+        if($num_of_rows == 0){
+            return true;
         } else {
             return false;
         }
+    }
+
+    public function fill_locations_table($file_locations)
+    {
+        $first_row = true;
+        foreach ($file_locations as $location) {
+            if(!$first_row){
+                $location_exploded = explode(';', $location);
+                $insert_query = "INSERT INTO locations (state_name, county_name, subcounty_name) ";
+                $insert_query .= "values (";
+                $insert_query .= "'{$location_exploded[0]}', '{$location_exploded[1]}', '{$location_exploded[2]}')";
+                $this->query($insert_query);
+            } else {
+                $first_row = false;
+            }
+        }
+
     }
 
     public function escape_value($string) {
@@ -91,3 +105,12 @@ class MySQLDatabase{
 
 $database = new MySQLDatabase();
 $db = $database;
+
+//revisar tabla locations
+//next step:
+// I can get properties using implode
+//if (table_is_empty(Location::$table_name)){fill_it}
+
+if($db->locations_table_is_empty()){
+    $db->fill_locations_table(file('./Datos/locationscsv.csv'));
+}

@@ -8,9 +8,15 @@
 
 require_once("/Datos/initialize.php");
 
-echo "hello world";
+echo "hello world <br>";
+//echo "numero de filas: " . $num_of_rows . '<br>';
+//$locations = file('./Datos/locationscsv.csv');
+//echo count($locations);
+//echo "<br>";
+//
+//foreach($locations as $loc){
+//    echo $loc . '<br>';
+//}
 
-$locations_result = $db->query("SELECT * FROM locations");
-$num_of_rows = $db->num_rows($locations_result);
-echo "numero de filas: " . $num_of_rows;
+//$file = file_get_contents('./Datos/locationscsv.csv');
 

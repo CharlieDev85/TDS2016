@@ -7,7 +7,7 @@
  */
 
 class Location {
-    protected static $table_name = "locations";
+    public static $table_name = "locations";
     public $location_id;
     public $state_name;
     public $county_name;
