@@ -19,7 +19,7 @@ if ($get){
     $sel_state  = $_GET['state'];
     $sel_month  = $_GET['month'];
     $sel_year   = $_GET['year'];
-
+    $get_result = Admin_Controller::selection_made($sel_state, $sel_month, $sel_year);
 }
 ?>
 
@@ -49,6 +49,7 @@ if ($get){
     </div>
 <?php
 if($get){
+//    echo $get_result;
     echo '<div class="combos1">
             <h2>Current Selection</h2>
             <ul>
@@ -56,27 +57,29 @@ if($get){
                 <li>Month: '. $sel_month .'</li><br><br>
                 <li>Year: '. $sel_year .'</li><br><br>
             </ul>
+        </div>
+        
+        <div class="combos1">
+            <h2>Options</h2>
+            <table>
+                <tr>
+                    <th>Type</th>
+                    <th>Action</th>
+                </tr>
+                <tr>
+                    <td>Forecast/Actual</td>
+                    <td>Delete</td>
+                </tr>
+                <tr>
+                    <td>Capacity</td>
+                    <td>Update</td>
+                </tr>
+            </table>
         </div>';
 }
 ?>
 
-    <div class="combos1">
-        <h2>Options</h2>
-        <table>
-            <tr>
-                <th>Type</th>
-                <th>Action</th>
-            </tr>
-            <tr>
-                <td>Forecast/Actual</td>
-                <td>Delete</td>
-            </tr>
-            <tr>
-                <td>Capacity</td>
-                <td>Update</td>
-            </tr>
-        </table>
-    </div>
+
 
 
 
