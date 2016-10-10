@@ -44,36 +44,53 @@ class MySQLDatabase{
     private function confirm_query($result) {
         if (!$result) {
             die("Database query failed.");
-        }
-    }
-
-    //checks if Locations has info
-    public function locations_table_is_empty(){
-        $locations_result = $this->query("SELECT * FROM locations");
-        $num_of_rows = $this->num_rows($locations_result);
-        if($num_of_rows == 0){
-            return true;
-        } else {
             return false;
         }
+        return true;
     }
 
-    public function fill_locations_table($file_locations)
-    {
-        $first_row = true;
-        foreach ($file_locations as $location) {
-            if(!$first_row){
-                $location_exploded = explode(';', $location);
-                $insert_query = "INSERT INTO locations (state_name, county_name, subcounty_name) ";
-                $insert_query .= "values (";
-                $insert_query .= "'{$location_exploded[0]}', '{$location_exploded[1]}', '{$location_exploded[2]}')";
-                $this->query($insert_query);
+    public function prepare_values($values_array){
+        $first_value = true;
+        $values_prepared = "";
+        foreach($values_array as $value){
+            if($first_value){
+                $values_prepared .= "'{$value}'";
+                $first_value = false;
             } else {
-                $first_row = false;
+                $values_prepared .= ", '$value'";
             }
         }
-
+        return $values_prepared;
     }
+
+
+    //It'll fill the table from csv if table is empty
+    public function check_table($table_name, $csv_file, $imploded_fields){
+        $sql = "SELECT * FROM " . $table_name;
+        $result = $this->query($sql);
+        $num_of_rows = $this->num_rows($result);
+        if($num_of_rows == 0){
+            $first_row = true;
+            foreach ($csv_file as $row) {
+                if(!$first_row){
+                    $row_exploded = explode(';', $row);
+                    $values = $this->prepare_values($row_exploded);
+                    $insert_query = "INSERT INTO {$table_name} ({$imploded_fields}) ";
+                    $insert_query .= "values (";
+                    $insert_query .= "{$values})";
+                    $query_ok = $this->query($insert_query);
+                    if (!$query_ok){
+                        return false;
+                    }
+                } else {
+                    $first_row = false;
+                }
+            }
+            return true;
+        }
+        return true;
+    }
+
 
     public function escape_value($string) {
         $escaped_string = mysqli_real_escape_string($this->connection, $string);
@@ -82,6 +99,10 @@ class MySQLDatabase{
 
     // "database neutral" functions
 
+    public function fetch_all($result_set) {
+        return mysqli_fetch_all($result_set, MYSQLI_NUM);
+    }
+
     public function fetch_array($result_set) {
         return mysqli_fetch_array($result_set);
     }
@@ -89,6 +110,7 @@ class MySQLDatabase{
     public function fetch_array_assoc($result_set) {
         return mysqli_fetch_assoc($result_set);
     }
+
     public function num_rows($result_set) {
         return mysqli_num_rows($result_set);
     }
@@ -106,11 +128,4 @@ class MySQLDatabase{
 $database = new MySQLDatabase();
 $db = $database;
 
-//revisar tabla locations
-//next step:
-// I can get properties using implode
-//if (table_is_empty(Location::$table_name)){fill_it}
 
-if($db->locations_table_is_empty()){
-    $db->fill_locations_table(file('./Datos/locationscsv.csv'));
-}

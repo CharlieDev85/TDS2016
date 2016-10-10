@@ -6,7 +6,11 @@
  * Time: 9:56 PM
  */
 
-//redirects to another location
+
+/**
+ * redirects to another location
+ * @param $new_location
+ */
 function redirect_to($new_location){
     header("Location: " . $new_location);
     exit;
