@@ -102,6 +102,19 @@ class LTW {
     public $location;
     public $week;
     public $trade;
+
+    private static $sql_filler = 'insert into LTW (location_id, week_id, trade_id)
+                            select l.location_id, w.week_id, t.trade_id
+                            from locations l, weeks w, trades t';
+
+
+    public static function check_table(){
+        global $db;
+        $empty = $db->table_is_empty(self::$table_name);
+        if($empty){
+            $db->query(self::$sql_filler);
+        }
+    }
 }
 
 class Capacity {

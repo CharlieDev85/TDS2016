@@ -63,28 +63,43 @@ class MySQLDatabase{
         return $values_prepared;
     }
 
-
-    //It'll fill the table from csv if table is empty
-    public function check_table($table_name, $csv_file, $imploded_fields){
-        $sql = "SELECT * FROM " . $table_name;
+    //check if a table is empty
+    public function table_is_empty($table_name){
+        $sql = 'SELECT * FROM ' . $table_name;
         $result = $this->query($sql);
         $num_of_rows = $this->num_rows($result);
         if($num_of_rows == 0){
+            return true;
+        }
+        return false;
+    }
+
+
+    //It'll fill the table from csv if table is empty
+    public function check_table($table_name, $csv_file, $imploded_fields)
+    {
+        $empty = $this->table_is_empty($table_name);
+        if($empty)
+        {
             $first_row = true;
-            foreach ($csv_file as $row) {
-                if(!$first_row){
+            foreach ($csv_file as $row)
+            {
+                if(!$first_row)
+                {
                     $row_exploded = explode(';', $row);
                     $values = $this->prepare_values($row_exploded);
                     $insert_query = "INSERT INTO {$table_name} ({$imploded_fields}) ";
                     $insert_query .= "values (";
                     $insert_query .= "{$values})";
                     $query_ok = $this->query($insert_query);
-                    if (!$query_ok){
+                    if (!$query_ok)
+                    {
                         return false;
                     }
-                } else {
+                } else
+                    {
                     $first_row = false;
-                }
+                    }
             }
             return true;
         }
