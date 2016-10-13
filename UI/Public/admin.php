@@ -72,7 +72,7 @@ if($get){
                 </tr>
                 <tr>
                     <td>Capacity</td>
-                    <td>Update</td>
+                    <td>Upload</td>
                 </tr>
             </table>
         </div>';

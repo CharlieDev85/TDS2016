@@ -67,6 +67,10 @@ class MySQLDatabase{
     public function table_is_empty($table_name){
         $sql = 'SELECT * FROM ' . $table_name;
         $result = $this->query($sql);
+        return $this->result_is_empty($result);
+    }
+
+    public function result_is_empty($result){
         $num_of_rows = $this->num_rows($result);
         if($num_of_rows == 0){
             return true;
