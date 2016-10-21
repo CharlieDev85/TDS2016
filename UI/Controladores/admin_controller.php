@@ -110,10 +110,13 @@ class Admin_Controller
     public static function upload_capacity($file){
         $tmp_file = $file['file_upload_capacity']['tmp_name'];
         if(file_exists($tmp_file)){
-            echo "submit capacity submited";
+            Capacity::save2($tmp_file);
+            echo "Data saved correctly";
         } else {
             echo "file was not selected";
+            return false;
         }
         unset($_FILES);
+        return true;
     }
 }

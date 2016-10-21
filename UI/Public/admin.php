@@ -15,20 +15,37 @@ $states = Location::get_states_options();
 $months = Week::get_options("months");
 $years = Week::get_options("years");
 $get = isset($_GET['state'])? true : false;
-$delete = isset($_GET['delete'])? $_GET['delete']: false;
+$delete = isset($_GET['delete'])? $_GET['type']: false;
+
+$content = '<div  class="combos1">
+        <form action="" method="get">
+            <h2>Make a Selection</h2>
+
+            <p>State:</p>
+            <select name="state">
+                '.$states.'
+            </select><br>
+
+            <p>Month:</p>
+            <select name="month">
+                '.$months.'
+            </select><br>
+
+            <p>Year:</p>
+            <select name="year">
+                '.$years.'
+            </select><br><br>
+
+            <input type="submit" value="Search">
+        </form>
+    </div>';
+
 if(isset($_POST['submit_forecast_actual'])){
     echo "submit_forecast_actual_submited";
-
+    $forecast_actual_posted = Admin_Controller::upload_forecast_actual($_FILES);
 }
 if(isset($_POST['submit_capacity'])){
-//    $tmp_file = $_FILES['file_upload_capacity']['tmp_name'];
     $capacity_posted = Admin_Controller::upload_capacity($_FILES);
-//    if(file_exists($tmp_file)){
-//        echo "submit capacity submited";
-//    } else {
-//        echo "file was not selected";
-//    }
-//    unset($_FILES);
 }
 if ($get){
     $sel_state  = $_GET['state'];
@@ -36,6 +53,7 @@ if ($get){
     $sel_year   = $_GET['year'];
 
     if($delete){
+
         $data_deleted = Admin_Controller::delete($delete, $sel_state, $sel_month, $sel_year);
     }
 
@@ -44,29 +62,11 @@ if ($get){
 ?>
 
 <div id="content">
-
-    <div  class="combos1">
-        <form action="" method="get">
-            <h2>Make a Selection</h2>
-
-            <p>State:</p>
-            <select name="state">
-                <?php echo $states; ?>
-            </select><br>
-
-            <p>Month:</p>
-            <select name="month">
-                <?php echo $months; ?>
-            </select><br>
-
-            <p>Year:</p>
-            <select name="year">
-                <?php echo $years; ?>
-            </select><br><br>
-
-            <input type="submit" value="Search">
-        </form>
-    </div>
+    <?php
+    if(!$get){
+        echo $content;
+    }
+    ?>
 <?php
 if($get){
 //    echo $get_result;
@@ -95,6 +95,7 @@ if($get){
                     <td>' . $get_result['Capacity'] . '</td>
                 </tr>
             </table>
+            <a href="admin.php"> <<< back</a>
         </div>';
 }
 ?>

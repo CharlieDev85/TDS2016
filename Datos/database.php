@@ -9,6 +9,7 @@
 require_once(LIB_PATH.DS."config.php");
 
 
+
 class MySQLDatabase{
 
     private $connection;
@@ -43,6 +44,7 @@ class MySQLDatabase{
 
     private function confirm_query($result) {
         if (!$result) {
+//            return true;
             die("Database query failed.");
             return false;
         }
@@ -53,6 +55,7 @@ class MySQLDatabase{
         $first_value = true;
         $values_prepared = "";
         foreach($values_array as $value){
+//            $value = $this->escape_value($value);
             if($first_value){
                 $values_prepared .= "'{$value}'";
                 $first_value = false;

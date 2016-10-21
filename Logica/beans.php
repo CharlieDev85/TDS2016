@@ -35,6 +35,17 @@ class Location
         }
         return $options;
     }
+
+    public static function get_id($location){
+        global $db;
+        $sql = "SELECT distinct location_id FROM locations ";
+        $sql .= "where state_name = '{$location->state_name}' ";
+        $sql .= "and county_name = '{$location->county_name}' ";
+        $sql .= "and subcounty_name like '{$location->subcounty_name}%'";
+        $id_result = $db->query($sql);
+        $id = $db->fetch_array($id_result);
+        return $id[0];
+    }
 }
 
 class Week {
@@ -79,6 +90,18 @@ class Week {
         return $options;
 
     }
+
+    public static function get_id($week, $month, $year){
+        global $db;
+        $sql = "select distinct week_id from weeks ";
+        $sql .= "where week_num = {$week} and ";
+//        $sql .= "weeks.month = {$month} and ";
+        $sql .= "weeks.year = {$year}";
+//        echo $sql;
+        $id_result = $db->query($sql);
+        $id = $db->fetch_array($id_result);
+        return $id[0];
+    }
 }
 
 class Trade {
@@ -86,6 +109,15 @@ class Trade {
     public static $fields= array("trade_name");
     public $trade_id;
     public $trade_name;
+
+    public static function get_id($trade_name){
+        global $db;
+        $sql = "select distinct trade_id ";
+        $sql .= "from trades where trade_name like '{$trade_name}%'";
+        $id_result = $db->query($sql);
+        $id = $db->fetch_array($id_result);
+        return $id[0];
+    }
 }
 
 class Channel {
@@ -115,6 +147,17 @@ class LTW {
             $db->query(self::$sql_filler);
         }
     }
+
+    public static function get_id($location_id, $week_id, $trade_id){
+        global $db;
+        $sql = "select distinct ltw_id from ltw ";
+        $sql .= "where location_id = {$location_id} ";
+        $sql .= "and week_id = {$week_id} ";
+        $sql .= "and trade_id = {$trade_id}";
+        $id_result = $db->query($sql);
+        $id = $db->fetch_array($id_result);
+        return $id[0];
+    }
 }
 
 class Capacity {
@@ -123,6 +166,53 @@ class Capacity {
     public $capacity_id;
     public $LTW;
     public $capacity_num;
+
+//    public static function save($file){
+////        var_dump($file);
+//        global $db;
+//        $rows_inserted = 0;
+//        $handle = fopen($file, "r");
+//        $row_num = 1;
+//        while($data = fgetcsv($handle, 1000, ";", '"', "\\")){
+//            if($row_num != 1){
+//                $complement_sql = "";
+//                $max = sizeof($data);
+//                for($i=0; $i<$max; $i++){
+//                    //todo
+//                }
+//                $sql = "insert into capacities (LTW_id, capacity_num) values ()";
+//                $sql .= $complement_sql;
+//                $db->query($sql);
+//                $rows_inserted ++;
+//            } else {
+//                $row_num ++;
+//            }
+//        }
+//    }
+
+    public static function save2($file){
+        global $db;
+        $handle = fopen($file, "r");
+        $row_num = 1;
+        while($data = fgetcsv($handle, 1000, ";", '"', "\\")){
+            if ($row_num != 1){
+                $location = new Location;
+                $location->state_name = $data[0];
+                $location->county_name = $data[1];
+                $location->subcounty_name = $data[2];
+                $location_id = Location::get_id($location);
+                $week_id = Week::get_id($data[4], $data[5], $data[6]);
+                $trade_id = Trade::get_id($data[3]);
+                $ltw_id = LTW::get_id($location_id, $week_id, $trade_id);
+                $sql = "insert into capacities (LTW_id, capacity_num) values (";
+                $sql .= "{$ltw_id}, {$data[7]})";
+                $db->query($sql);
+            }else{
+                $row_num ++;
+            }
+
+        }
+    }
 }
 
 class ForecastActual {

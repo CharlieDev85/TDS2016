@@ -6,6 +6,8 @@
  * Time: 10:21 PM
  */
 
+ini_set('max_execution_time', 600); //300 seconds = 5 minutes
+
 // Define the core paths
 // Define them as absolute paths to make sure that require_once works as expected
 
