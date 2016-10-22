@@ -16,12 +16,12 @@ select{
 .combos1 {
     float: left;
     width: 800px;
-    height: 250px;
+    height: 200px;
 }
 
 .combos2 {
 	float: left;
-	width: 400px;
+	width: 500px;
 	height: 400px;
 }
 
@@ -85,14 +85,30 @@ div.message {
 	margin: 1em 0 ; padding: 1em; 
 }
 
-.responstable {
-	margin: 1em 0;
-	width: 130%;
-	overflow: hidden;
-	background: #FFF;
-	color: #024457;
-	border-radius: 10px;
-	border: 1px solid #167F92;
+/*.responstable {*/
+	/*margin: 1em 0;*/
+	/*width: 130%;*/
+	/*overflow: hidden;*/
+	/*background: #FFF;*/
+	/*color: #024457;*/
+	/*border-radius: 10px;*/
+	/*border: 1px solid #167F92;*/
+/*}*/
+
+table {
+	font-family: arial, sans-serif;
+	border-collapse: collapse;
+	width: 100%;
+}
+
+td, th {
+	border: 1px solid #dddddd;
+	text-align: left;
+	padding: 8px;
+}
+
+tr:nth-child(even) {
+	background-color: #dddddd;
 }
 
 /* errors */

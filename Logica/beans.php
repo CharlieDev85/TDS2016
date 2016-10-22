@@ -125,7 +125,7 @@ class Location
 class Week {
     public static $table_name = "weeks";
     public static $fields   = array("week_num", "week_date1", "week_date2", "month", "year");
-    private static $months   = array(1 => 'Jan', 2 => 'Feb', 3 => 'Mar', 4 => 'Apr',
+    public static $months   = array(1 => 'Jan', 2 => 'Feb', 3 => 'Mar', 4 => 'Apr',
                                     5 => 'May', 6 => 'Jun', 7 => 'Jul', 8 => 'Aug',
                                     9 => 'Sep', 10 => 'Oct', 11 => 'Nov', 12 => 'Dec');
     private static $years = array(2016 => '2016', 2017 => '2017');
@@ -177,8 +177,28 @@ class Week {
         return $id[0];
     }
 
-    public static function get_years_for_viewers(){
+    public static function get_years_for_viewer(){
+        global $db;
+        $options = "";
+        $sql = "select distinct year from weeks w ";
+        $sql .= "inner join ltw on ltw.week_id = w.week_id ";
+        $sql .= "inner join forecast_actual f on f.ltw_id = ltw.ltw_id";
+        $result = $db->query($sql);
+        $array = $db->fetch_all($result);
+//        var_dump($array);
+        foreach($array as $year){
+            $options .=  ' <option value="' . $year[0] . '"> ' . $year[0] .  '</option>\n';
+        }
+        return $options;
+    }
 
+    public static function get_months_for_viewer(){
+        $months = self::$months;
+        $options = "";
+        foreach($months as $key => $value){
+            $options .=  ' <option value="' . $key . '"> ' . $value .  '</option>\n';
+        }
+        return $options;
     }
 }
 
@@ -195,6 +215,21 @@ class Trade {
         $id_result = $db->query($sql);
         $id = $db->fetch_array($id_result);
         return $id[0];
+    }
+
+    public static function get_trades_for_viewer(){
+        global $db;
+        $options = "";
+        $sql = "select distinct trade_name from trades ";
+        $sql .= "inner join ltw on ltw.trade_id = trades.trade_id ";
+        $sql .= "inner join capacities c on c.LTW_id = ltw.LTW_id";
+        $result = $db->query($sql);
+        $array = $db->fetch_all($result);
+//        var_dump($array);
+        foreach($array as $trade){
+            $options .=  ' <option value="' . $trade[0] . '"> ' . $trade[0] .  '</option>\n';
+        }
+        return $options;
     }
 }
 
