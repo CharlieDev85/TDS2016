@@ -9,6 +9,7 @@
 require_once(LIB_PATH.DS."config.php");
 
 
+
 class MySQLDatabase{
 
     private $connection;
@@ -43,6 +44,7 @@ class MySQLDatabase{
 
     private function confirm_query($result) {
         if (!$result) {
+//            return true;
             die("Database query failed.");
             return false;
         }
@@ -53,6 +55,7 @@ class MySQLDatabase{
         $first_value = true;
         $values_prepared = "";
         foreach($values_array as $value){
+//            $value = $this->escape_value($value);
             if($first_value){
                 $values_prepared .= "'{$value}'";
                 $first_value = false;
@@ -63,28 +66,47 @@ class MySQLDatabase{
         return $values_prepared;
     }
 
-
-    //It'll fill the table from csv if table is empty
-    public function check_table($table_name, $csv_file, $imploded_fields){
-        $sql = "SELECT * FROM " . $table_name;
+    //check if a table is empty
+    public function table_is_empty($table_name){
+        $sql = 'SELECT * FROM ' . $table_name;
         $result = $this->query($sql);
+        return $this->result_is_empty($result);
+    }
+
+    public function result_is_empty($result){
         $num_of_rows = $this->num_rows($result);
         if($num_of_rows == 0){
+            return true;
+        }
+        return false;
+    }
+
+
+    //It'll fill the table from csv if table is empty
+    public function check_table($table_name, $csv_file, $imploded_fields)
+    {
+        $empty = $this->table_is_empty($table_name);
+        if($empty)
+        {
             $first_row = true;
-            foreach ($csv_file as $row) {
-                if(!$first_row){
+            foreach ($csv_file as $row)
+            {
+                if(!$first_row)
+                {
                     $row_exploded = explode(';', $row);
                     $values = $this->prepare_values($row_exploded);
                     $insert_query = "INSERT INTO {$table_name} ({$imploded_fields}) ";
                     $insert_query .= "values (";
                     $insert_query .= "{$values})";
                     $query_ok = $this->query($insert_query);
-                    if (!$query_ok){
+                    if (!$query_ok)
+                    {
                         return false;
                     }
-                } else {
+                } else
+                    {
                     $first_row = false;
-                }
+                    }
             }
             return true;
         }
