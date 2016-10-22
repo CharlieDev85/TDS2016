@@ -41,7 +41,7 @@ $content = '<div  class="combos1">
     </div>';
 
 if(isset($_POST['submit_forecast_actual'])){
-    echo "submit_forecast_actual_submited";
+//    var_dump($_FILES);
     $forecast_actual_posted = Admin_Controller::upload_forecast_actual($_FILES);
 }
 if(isset($_POST['submit_capacity'])){

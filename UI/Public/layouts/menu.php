@@ -17,7 +17,7 @@
       <br>
 
       <ul>
-        <li><a href="viewer.php">Viewer</a></li>
+        <li><a href="viewer.php?state=all&county=all&subcounty=all">Viewer</a></li>
         <br>
 
         <li><a href="admin.php">Admin</a></li>

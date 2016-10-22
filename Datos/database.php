@@ -55,7 +55,7 @@ class MySQLDatabase{
         $first_value = true;
         $values_prepared = "";
         foreach($values_array as $value){
-//            $value = $this->escape_value($value);
+            $value = trim($value);
             if($first_value){
                 $values_prepared .= "'{$value}'";
                 $first_value = false;

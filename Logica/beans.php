@@ -25,6 +25,40 @@ class Location
         return $states_array;
     }
 
+    public static function get_states_viewer(){
+        global $db;
+        $sql = "select distinct state_name from locations l ";
+        $sql .= "inner join ltw on ltw.location_id = l.location_id ";
+        $sql .= "inner join forecast_actual f on f.ltw_id = ltw.ltw_id";
+        $result = $db->query($sql);
+        $states_array = $db->fetch_all($result);
+        return $states_array;
+    }
+
+    public static function get_counties_viewer($state){
+        global $db;
+        $sql = "select distinct county_name from locations l ";
+        $sql .= "inner join ltw on ltw.location_id = l.location_id ";
+        $sql .= "inner join forecast_actual f on f.ltw_id = ltw.ltw_id ";
+        $sql .= "where l.state_name = '{$state}'";
+//        echo $sql;
+        $result = $db->query($sql);
+        $counties_array = $db->fetch_all($result);
+        return $counties_array;
+    }
+
+    public static function get_subcounties_viewer($state_selected, $county_selected){
+        global $db;
+        $sql = "select distinct subcounty_name from locations l ";
+        $sql .= "inner join ltw on ltw.location_id = l.location_id ";
+        $sql .= "inner join forecast_actual f on f.ltw_id = ltw.ltw_id ";
+        $sql .= "where l.state_name = '{$state_selected}' and ";
+        $sql .= "l.county_name = '{$county_selected}'";
+        $result = $db->query($sql);
+        $subcounties_array = $db->fetch_all($result);
+        return $subcounties_array;
+    }
+
     public static function get_states_options()
     {
         $states = self::get_states();
@@ -45,6 +79,46 @@ class Location
         $id_result = $db->query($sql);
         $id = $db->fetch_array($id_result);
         return $id[0];
+    }
+
+    public static function get_states_options_for_viewer($selected_state){
+        $states = self::get_states_viewer();
+        $options = "";
+        foreach($states as $s)
+        {
+            if($selected_state == $s[0]){
+                $options .=  ' <option value="' . $s[0] . '" selected> ' . $s[0] .  '</option>\n';
+            }else {
+                $options .=  ' <option value="' . $s[0] . '"> ' . $s[0] .  '</option>\n';
+            }
+        }
+        return $options;
+    }
+
+    public static function get_counties_options_for_viewer($selected_state, $selected_county){
+        $counties = self::get_counties_viewer($selected_state);
+        $options = "";
+        foreach($counties as $c){
+            if($selected_county == $c[0]){
+                $options .=  ' <option value="' . $c[0] . '" selected> ' . $c[0] .  '</option>\n';
+            } else {
+                $options .=  ' <option value="' . $c[0] . '"> ' . $c[0] .  '</option>\n';
+            }
+        }
+        return $options;
+    }
+
+    public static function get_subcounties_options_for_viewer($selected_state, $selected_county, $selected_subcounty){
+        $subcounties = self::get_subcounties_viewer($selected_state, $selected_county);
+        $options = "";
+        foreach($subcounties as $su){
+            if($selected_subcounty == $su[0]){
+                $options .=  ' <option value="' . $su[0] . '" selected> ' . $su[0] .  '</option>\n';
+            } else {
+                $options .=  ' <option value="' . $su[0] . '"> ' . $su[0] .  '</option>\n';
+            }
+        }
+        return $options;
     }
 }
 
@@ -101,6 +175,10 @@ class Week {
         $id_result = $db->query($sql);
         $id = $db->fetch_array($id_result);
         return $id[0];
+    }
+
+    public static function get_years_for_viewers(){
+
     }
 }
 
@@ -167,28 +245,6 @@ class Capacity {
     public $LTW;
     public $capacity_num;
 
-//    public static function save($file){
-////        var_dump($file);
-//        global $db;
-//        $rows_inserted = 0;
-//        $handle = fopen($file, "r");
-//        $row_num = 1;
-//        while($data = fgetcsv($handle, 1000, ";", '"', "\\")){
-//            if($row_num != 1){
-//                $complement_sql = "";
-//                $max = sizeof($data);
-//                for($i=0; $i<$max; $i++){
-//                    //todo
-//                }
-//                $sql = "insert into capacities (LTW_id, capacity_num) values ()";
-//                $sql .= $complement_sql;
-//                $db->query($sql);
-//                $rows_inserted ++;
-//            } else {
-//                $row_num ++;
-//            }
-//        }
-//    }
 
     public static function save2($file){
         global $db;
@@ -224,4 +280,28 @@ class ForecastActual {
     public $forecast_num;
     public $actual_num;
     public $deviation_perc;
+
+    public static function save($file){
+        global $db;
+        $handle = fopen($file, "r");
+        $row_num = 1;
+        while($data = fgetcsv($handle, 1000, ";", '"', "\\")){
+            if ($row_num != 1){
+                $location = new Location;
+                $location->state_name = $data[0];
+                $location->county_name = $data[1];
+                $location->subcounty_name = $data[2];
+                $location_id = Location::get_id($location);
+                $week_id = Week::get_id($data[4], $data[5], $data[6]);
+                $trade_id = Trade::get_id($data[3]);
+                $ltw_id = LTW::get_id($location_id, $week_id, $trade_id);
+                $dev = $data[8]/$data[7];
+                $sql = "insert into forecast_actual (LTW_id, forecast_num, actual_num, deviation_num) values (";
+                $sql .= "{$ltw_id}, {$data[7]}, {$data[8]}, {$dev})";
+                $db->query($sql);
+            }else{
+                $row_num ++;
+            }
+        }
+    }
 }

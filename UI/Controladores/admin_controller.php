@@ -119,4 +119,15 @@ class Admin_Controller
         unset($_FILES);
         return true;
     }
+
+    public static function upload_forecast_actual($file){
+        $tmp_file = $file['file_upload_forecast_actual']['tmp_name'];
+        if(file_exists($tmp_file)){
+            ForecastActual::save($tmp_file);
+            echo "Data saved correctly";
+        } else {
+            echo "file was not selected";
+            return false;
+        }
+    }
 }
